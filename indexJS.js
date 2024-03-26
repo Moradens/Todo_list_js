@@ -2,12 +2,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const taskInput = document.getElementById('taskInput');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const tasksList = document.getElementById('tasks');
-
+    const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    storedTasks.forEach(task => addTask(task));
     addTaskBtn.addEventListener('click', function () {
         const taskText = taskInput.value.trim();
         if (taskText !== '') {
             addTask(taskText);
             taskInput.value = '';
+            saveTasks();
         }
     });
 
@@ -24,9 +26,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const deleteBtn = listItem.querySelector('.deleteBtn');
         deleteBtn.addEventListener('click', function () {
             listItem.remove();
+            saveTasks();
         });
     }
 
+    function saveTasks() {
+        const tasks = Array.from(document.querySelectorAll('.newitem')).map(item => item.textContent);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
     window.drag = function (event) {
         event.dataTransfer.setData('text', event.target.outerHTML);
         event.target.style.opacity = '0.4';
@@ -41,14 +48,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = event.dataTransfer.getData('text');
         const draggedItem = document.createElement('div');
         draggedItem.innerHTML = data;
-
-        // Check if the drop target is a valid next position
         const dropTarget = event.target.closest('.task');
         if (dropTarget) {
             const tasks = Array.from(tasksList.querySelectorAll('.task'));
             const dropIndex = tasks.indexOf(dropTarget);
-
-            // Check if the dragged item is being dropped next to another item
             if (dropIndex !== -1) {
                 const draggedIndex = tasks.indexOf(draggedItem.firstChild);
                 const diff = Math.abs(dropIndex - draggedIndex);
