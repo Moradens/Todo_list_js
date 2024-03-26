@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }
-
         draggedItem.firstChild.style.opacity = '1';
     };
 });
